@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART IMPORT - Dashboard de Viabilidad Comercial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        :root {
+            --bg-main: #F4F6F9; 
+            --bg-panel: #FFFFFF; 
+            --navy-dark: #0A1628; 
+            --navy-light: #132240; 
+            --copper: #C17F3E; 
+            --copper-light: #DBA04E;
+            --cream: #F5F0E8; 
+            --gray-text: #64748B;
+            --border-color: #E2E8F0;
+            --success-bg: #E6F4EA;
+            --success-text: #137333;
+            --font-main: 'Aptos', 'Calibri', sans-serif;
+            --font-display: 'Montserrat', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-main);
+            color: var(--navy-dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* BARRA LATERAL FIXED CON TU LOGO */
+        .sidebar {
+            width: 320px;
+            background: var(--navy-dark);
+            color: #FFFFFF;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-brand {
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .brand-logo-img {
+            width: 100%;
+            max-width: 240px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: .85rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item a:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active a {
+            background: linear-gradient(90deg, rgba(193, 127, 62, 0.2) 0%, rgba(193, 127, 62, 0.02) 100%);
+            color: #FFFFFF;
+            border-left-color: var(--copper);
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid rgba(255,255,255,.08);
+            padding-top: 20px;
+            font-size: .7rem;
+            color: #64748B;
+            line-height: 1.5;
+        }
+
+        /* CONTENEDOR PRINCIPAL ORIGINAL ESTABLE */
+        .main-content {
+            margin-left: 320px;
+            flex: 1;
+            padding: 60px 60px 60px 80px;
+            max-width: 1250px;
+        }
+
+        .doc-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--copper);
+            padding-bottom: 35px;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 3.4rem;
+            font-weight: 700;
+            color: var(--navy-dark);
+            line-height: 1.1;
+            letter-spacing: -0.01em;
+        }
+
+        .header-meta-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-top: 25px;
+            padding: 20px 30px;
+            background: var(--cream);
+            border-radius: 8px;
+            border-left: 5px solid var(--copper);
+            width: 100%;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--copper);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 6px;
+        }
+
+        .meta-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--navy-dark);
+        }
+
+        .subtitle-page {
+            font-size: 1rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .25em;
+            color: var(--copper);
+            margin-top: 12px;
+        }
+
+        .section-block {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 45px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .section-block.featured {
+            background: var(--cream);
+            border-color: rgba(193, 127, 62, 0.2);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--copper);
+            margin-bottom: 24px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-main);
+        }
+
+        p {
+            font-size: .98rem;
+            color: #334155;
+            margin-bottom: 18px;
+            text-wrap: pretty;
+        }
+
+        /* DASHBOARD METRICAS */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 35px;
+        }
+
+        .meta-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+        }
+
+        .meta-card .label {
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--gray-text);
+            margin-bottom: 8px;
+        }
+
+        .meta-card .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--navy-dark);
+        }
+
+        .meta-card .value.highlight {
+            color: var(--copper);
+        }
+
+        .meta-card .sub-label {
+            font-size: .75rem;
+            color: var(--gray-text);
+            margin-top: 4px;
+        }
+
+        /* GALERÍA DE PRODUCTOS */
+        .product-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .product-img-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .product-img-card img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-img-title {
+            padding: 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--navy-dark);
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* MINIATURAS INTERNAS */
+        .table-flex-prod {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .table-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.15);
+            flex-shrink: 0;
+        }
+
+        .table-thumb.light-bg-thumb {
+            border-color: var(--border-color);
+        }
+
+        /* ESTRUCTURA DE TABLAS ORIGINAL ESTABLE */
+        .table-container {
+            border-radius: 12px;
+            overflow: hidden; 
+            margin: 24px 0 10px;
+            box-shadow: 0 8px 24px rgba(10, 22, 40, 0.06);
+        }
+
+        .table-title {
+            background: var(--navy-dark);
+            padding: 18px 20px;
+            font-size: .85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #FFFFFF;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            font-size: .9rem;
+            vertical-align: middle;
+        }
+
+        /* Tablas oscuras */
+        .table-dark-premium table {
+            background: var(--navy-light);
+            color: #FFFFFF;
+        }
+
+        .table-dark-premium th {
+            background: var(--navy-dark);
+            color: var(--copper-light);
+            font-weight: 600;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .table-dark-premium td {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .table-dark-premium tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-dark-premium .text-explain {
+            color: #94A3B8 !important;
+            font-size: .78rem;
+            font-weight: 400;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Tablas claras */
+        .table-light-premium table {
+            background: var(--cream);
+            color: var(--navy-dark);
+        }
+
+        .table-light-premium th {
+            background: rgba(193, 127, 62, 0.1);
+            color: var(--navy-dark);
+            font-weight: 600;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            border-bottom: 2px solid var(--copper);
+        }
+
+        .table-light-premium td {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* DISEÑO EXCLUSIVO PARA LA TABLA DE PRECIOS - FUENTE REDUCIDA 1 PUNTO */
+        .precios-table td, .precios-table th {
+            font-size: 0.8rem !important;
+            padding: 14px 16px;
+        }
+
+        .bg-total-dark { background: var(--navy-dark); }
+        .bg-recommend { background: rgba(193, 127, 62, 0.05); }
+
+        /* ALERTAS */
+        .alert-box {
+            background: var(--cream);
+            border-left: 6px solid var(--copper);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 30px 0;
+            border-top: 1px solid var(--copper-light);
+            border-right: 1px solid var(--copper-light);
+            border-bottom: 1px solid var(--copper-light);
+        }
+
+        .alert-box h4 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--copper);
+            margin-bottom: 10px;
+            letter-spacing: .05em;
+        }
+
+        .alert-box.success {
+            background: var(--success-bg);
+            border-left-color: var(--success-text);
+            border-top-color: #E2F0D9;
+            border-right-color: #E2F0D9;
+            border-bottom-color: #E2F0D9;
+        }
+
+        .alert-box.success h4 { color: var(--success-text); }
+        ul, ol { margin-left: 20px; margin-bottom: 20px; color: #475569; font-size: .95rem; }
+        li { margin-bottom: 8px; }
+
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .bold { font-weight: 600; }
+        .text-copper { color: var(--copper); }
+        .text-copper-light { color: var(--copper-light); }
+        .text-gray { color: var(--gray-text); }
+        .text-success { color: var(--success-text); }
+        
+        @media (max-width: 1150px) {
+            .sidebar { width: 280px; padding: 30px 20px; }
+            .main-content { margin-left: 280px; padding: 40px 30px; }
+            .meta-grid { grid-template-columns: repeat(2, 1fr); }
+            .product-gallery { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL FIXED -->
+    <aside class="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-brand">
+                <img src="LOGO1 400x83 (1).png" alt="Smart Import Logo" class="brand-logo-img">
+            </div>
+            
+            <nav style="margin-top: 30px;">
+                <ul class="nav-menu" id="sidebar-menu">
+                    <li class="nav-item active" data-sec="resumen"><a href="#resumen">01. Resumen Ejecutivo</a></li>
+                    <li class="nav-item" data-sec="costos"><a href="#costos">02. Ventaja de Costos</a></li>
+                    <li class="nav-item" data-sec="proforma"><a href="#proforma">03. Proforma Comercial</a></li>
+                    <li class="nav-item" data-sec="costeo"><a href="#costeo">04. Matriz de Costeo</a></li>
+                    <li class="nav-item" data-sec="precios"><a href="#precios">05. Proyección de Precios</a></li>
+                    <li class="nav-item" data-sec="fiscal"><a href="#fiscal">06. Recuperación Fiscal</a></li>
+                    <li class="nav-item" data-sec="cierre"><a href="#cierre">07. Revisión de Etapa</a></li>
+                    <li class="nav-item" data-sec="limitaciones"><a href="#limitaciones">08. Alcance Legal</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <strong>Smart Import Company LLC</strong><br>
+            Sourcing · Logistics · China → LATAM<br>
+            <span style="color: var(--copper); font-size: 0.65rem; font-weight: 600;">v1.2 (Año Comercial 2026)</span>
+        </div>
+    </aside>
+
+    <!-- CUERPO CENTRAL DE INFORMACIÓN -->
+    <main class="main-content">
+        
+        <!-- ENCABEZADO PRINCIPAL -->
+        <header class="doc-header">
+            <div>
+                <h1>Estudio de Viabilidad Comercial</h1>
+                <div class="subtitle-page">Análisis Económico Operativo del Lote</div>
+            </div>
+            <div class="header-meta-grid">
+                <div class="meta-item">
+                    <span class="meta-label">ATENCIÓN A</span>
+                    <span class="meta-value">Gisela y Wilfredo Rengifo</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">CLIENTE</span>
+                    <span class="meta-value">Importaciones Manorca S.A.C.</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">REFERENCIA</span>
+                    <span class="meta-value">SOU-20260622-7699</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">FECHA</span>
+                    <span class="meta-value">23 de Junio de 2026</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD METRICAS -->
+        <section class="meta-grid">
+            <div class="meta-card">
+                <div class="label">Estado de la Carga</div>
+                <div class="value highlight">Según Fábrica</div>
+                <div class="sub-label text-success">Estimado en 10 días</div>
+            </div>
+            <div class="meta-card">
+                <div class="label">Inversión Estimada</div>
+                <div class="value">S/ 38,437.07</div>
+                <div class="sub-label">USD 10,982.02 (TC Ref. 3.50)</div>
+            </div>
+            <div class="meta-card">
+                <div class="label">Impuestos Liquidados</div>
+                <div class="value" style="color: var(--success-text);">USD 1,964.91</div>
+                <div class="sub-label">Sujeto a evaluación contable</div>
+            </div>
+            <div class="meta-card">
+                <div class="label">Total Unidades Lote</div>
+                <div class="value">601 Unidades</div>
+                <div class="sub-label">Modelos Seleccionados</div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 1 -->
+        <section id="resumen" class="section-block featured">
+            <h2>01 — Resumen Ejecutivo</h2>
+            <p>
+                Estimado Sr. Wilfredo, a continuación se presenta el análisis de viabilidad técnica y financiera estimado para el desarrollo de la orden de importación de su empresa. Este informe consolida la proyección referencial entre la <strong>Cotización Internacional (Proforma)</strong> y la <strong>Matriz de Costeo Estimado de Aduanas</strong> puesta en Lima.
+            </p>
+            <p>
+                De acuerdo con la información proporcionada por el fábrica, los modelos seleccionados contarían con <strong>disponibilidad en inventario</strong>, lo que proyectaría una reducción en los tiempos de espera respecto a la producción regular. Sujeto a verificación durante la inspección preembarque, se estima que la carga podría estar lista para su consolidación logística en un plazo referencial de <strong>10 días calendario</strong>.
+            </p>
+
+            <div class="product-gallery">
+                <div class="product-img-card">
+                    <img src="PRINCESS CUT COAT WITH LINING.jpeg" alt="Princess Cut Coat">
+                    <div class="product-img-title">Princess Cut Coat with Lining (201 un.)</div>
+                </div>
+                <div class="product-img-card">
+                    <img src="Princess Cut Tweed Blazer.jpeg" alt="Princess Cut Tweed Blazer">
+                    <div class="product-img-title">Princess Cut Tweed Blazer (200 un.)</div>
+                </div>
+                <div class="product-img-card">
+                    <img src="short black knit cardigan with faux pearl design.jpeg" alt="Short Black Knit Cardigan">
+                    <div class="product-img-title">Short Black Knit Cardigan (200 un.)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2 -->
+        <section id="costos" class="section-block">
+            <h2>02 — Análisis Comparativo de Costos</h2>
+            <p>
+                La importación directa se perfila como un modelo que puede optimizar la estructura de costos frente a la compra local. A continuación, se detalla la proyección de los costos integrados de los productos (que incluyen estimaciones de flete, seguros, servicios y el pago del <strong>Ad Valorem aduanero del 11%</strong>) frente a los valores referenciales de la compra local:
+            </p>
+            <ul>
+                <li><strong class="text-copper">PRINCESS CUT COAT WITH LINING (201 un.):</strong> El costo de importación proyectado puesto en Lima es de <strong>S/ 48.46 por unidad</strong>, frente a los S/ 85.00 - S/ 100.00 de la compra local previa. Esto representaría una <strong>optimización proyectada del 45%</strong> en adquisición.</li>
+                <li><strong class="text-copper">Princess Cut Tweed Blazer (200 un.):</strong> El costo estimado es de <strong>S/ 58.56 por unidad</strong>, frente a los S/ 65.00 - S/ 75.00 de la modalidad de fardos locales. La importación de origen busca estandarizar las especificaciones del producto, procurando mitigar el riesgo de merma, condición que será validada tras la inspección correspondiente.</li>
+                <li><strong class="text-copper">Short Black Knit Cardigan (200 un.):</strong> El costo estimado es de <strong>S/ 39.11 por unidad</strong>, frente a la adquisición local de S/ 45.00 - S/ 55.00. Este diferencial ofrece un margen de maniobra proyectado que el cliente podrá gestionar según su estrategia comercial.</li>
+            </ul>
+        </section>
+
+        <!-- SECCIÓN 3 -->
+        <section id="proforma" class="section-block">
+            <h2>03 — Proforma Invoice Oficial (SITQ20260622-001)</h2>
+            <p>
+                Este es el desglose comercial de la orden bajo condiciones de entrega <strong>EXW (Ningbo, China)</strong>. Se especifican los precios negociados por prenda en fábrica y el beneficio de crédito aplicado al balance final:
+            </p>
+            
+            <div class="table-container table-dark-premium">
+                <div class="table-title">Detalle de Mercadería y Sourcing (Valores en USD)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 60px;">Ítem</th>
+                            <th>Descripción Comercial del Producto</th>
+                            <th class="text-center" style="width: 110px;">Cantidad</th>
+                            <th class="text-right" style="width: 150px;">Precio Unit. (USD)</th>
+                            <th class="text-right" style="width: 160px;">Total General (USD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center bold text-copper-light">01</td>
+                            <td>
+                                <div class="table-flex-prod">
+                                    <img src="Princess Cut Tweed Blazer.jpeg" alt="Blazer Mini" class="table-thumb">
+                                    <div>
+                                        <span class="bold">Princess Cut Tweed Blazer</span>
+                                        <span class="text-explain">Bouclé texturizado de poliéster, Slim Fit con hombreras internas, doble botonadura.</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center bold">200.00</td>
+                            <td class="text-right">USD 11.59</td>
+                            <td class="text-right bold">USD 2,318.00</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center bold text-copper-light">02</td>
+                            <td>
+                                <div class="table-flex-prod">
+                                    <img src="PRINCESS CUT COAT WITH LINING.jpeg" alt="Coat Mini" class="table-thumb">
+                                    <div>
+                                        <span class="bold">PRINCESS CUT COAT WITH LINING</span>
+                                        <span class="text-explain">Abrigo de paño denso con doble botonadura dorada metálica. Corte princesa.</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center bold text-copper-light">201.00</td>
+                            <td class="text-right">USD 8.25</td>
+                            <td class="text-right bold">USD 1,658.25</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center bold text-copper-light">03</td>
+                            <td>
+                                <div class="table-flex-prod">
+                                    <img src="short black knit cardigan with faux pearl design.jpeg" alt="Cardigan Mini" class="table-thumb">
+                                    <div>
+                                        <span class="bold">short black knit cardigan with faux pearl design</span>
+                                        <span class="text-explain">Cárdigan de punto afelpado estilo Chanel, botones de rosa blanca.</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center bold">200.00</td>
+                            <td class="text-right">USD 7.07</td>
+                            <td class="text-right bold">USD 1,414.00</td>
+                        </tr>
+                        <tr class="bg-total-dark" style="border-top: 1px solid rgba(255,255,255,0.2);">
+                            <td colspan="2" class="bold text-right text-gray">MERCADERÍA (SUBTOTAL VALOR FOB)</td>
+                            <td class="text-center bold text-copper-light">601.00</td>
+                            <td></td>
+                            <td class="text-right bold text-copper-light">USD 5,390.25</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right text-gray">Service Fee (Gestión Integral de Compra e Inspección)</td>
+                            <td class="text-right">USD 600.00</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-right" style="color: #FF6B6B; font-weight: 600;">Descuento / Crédito Comercial Aplicado a Favor</td>
+                            <td class="text-right bold" style="color: #FF6B6B;">-USD 497.00</td>
+                        </tr>
+                        <tr class="bg-total-dark" style="border-top: 2px solid var(--copper);">
+                            <td colspan="4" class="bold text-right text-copper-light">TOTAL COMPRA INTERNACIONAL NETO (VALOR EXW)</td>
+                            <td class="text-right bold text-copper-light">USD 5,493.25</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4 -->
+        <section id="costeo" class="section-block">
+            <h2>04 — Matriz Definitiva de Costeo y Liquidación de Aduanas</h2>
+            <p>
+                A continuación, se presenta la estructura económica de la importación procesando la proyección de la base imponible y los impuestos aduaneros correspondientes:
+            </p>
+
+            <div class="alert-box">
+                <h4>📋 NOTA TÉCNICA DE CARÁCTER REFERENCIAL</h4>
+                <p>
+                    Los montos logísticos y operativos presentados en este cuadro son de <strong>carácter netamente referencial y estimado</strong>. Los costos y medidas definitivas de su negocio se determinarán de manera exacta de acuerdo con el <strong>empaque final en la fábrica en China</strong>. Una vez que la mercadería esté empaquetada, se conocerán las dimensiones reales, el peso bruto real y si la fábrica entrega 2 cajas, 5 cajas o el volumen final consolidado. Los tributos y gastos de nacionalización en aduanas se ajustarán de forma proporcional sobre dicho cubicaje verificado. El presente costeo tomó como referencia inicial un volumen estandarizado de 1.00 CBM.
+                </p>
+            </div>
+
+            <div class="table-container table-dark-premium">
+                <div class="table-title">Estructura Económica Integrada de Importación (SOU-20260622-7699)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto Operativo / Impuesto Aduanero</th>
+                            <th class="text-right" style="width: 140px;">Monto (USD)</th>
+                            <th class="text-right" style="width: 140px;">Monto (PEN)</th>
+                            <th>Naturaleza en el Flujo de Caja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="bold">Orden de Compra FOB Total (Valor Comercial)</td>
+                            <td class="text-right">USD 5,390.25</td>
+                            <td class="text-right">S/ 18,865.88</td>
+                            <td class="text-gray">Costo directo de mercadería en origen</td>
+                        </tr>
+                        <tr>
+                            <td>Flete Internacional</td>
+                            <td class="text-right">USD 130.00</td>
+                            <td class="text-right">S/ 455.00</td>
+                            <td class="text-gray">Costo logístico internacional (Sujeto a empaque final)</td>
+                        </tr>
+                        <tr>
+                            <td>Seguro de Carga</td>
+                            <td class="text-right">USD 40.00</td>
+                            <td class="text-right">S/ 140.00</td>
+                            <td class="text-gray">Seguro de transporte</td>
+                        </tr>
+                        <tr style="background: var(--navy-dark);">
+                            <td class="bold text-copper-light">VALOR CIF LIQUIDACIÓN SUNAT (OBLIGATORIO)</td>
+                            <td class="text-right bold text-copper-light">USD 5,940.24</td>
+                            <td class="text-right bold text-copper-light">S/ 20,790.84</td>
+                            <td class="bold text-copper-light">Base imponible definitiva para impuestos</td>
+                        </tr>
+                        <tr>
+                            <td>Gastos Locales en Destino (Almacén / Despacho)</td>
+                            <td class="text-right">USD 1,170.00</td>
+                            <td class="text-right">S/ 4,095.00</td>
+                            <td class="text-gray">Servicios logísticos locales en Perú</td>
+                        </tr>
+                        <tr>
+                            <td>Service Fee (Gestión Integral de Compra)</td>
+                            <td class="text-right">USD 600.00</td>
+                            <td class="text-right">S/ 2,100.00</td>
+                            <td class="text-gray">Operación y soporte de Sourcing corporativo</td>
+                        </tr>
+                        <tr>
+                            <td class="bold" style="color: #FF6B6B;">Ad Valorem Aduanero (Tasa Textile 11%)</td>
+                            <td class="text-right bold" style="color: #FF6B6B;">USD 653.43</td>
+                            <td class="text-right bold" style="color: #FF6B6B;">S/ 2,287.01</td>
+                            <td class="bold" style="color: #FF4D4F;">Gasto Directo No Reembolsable (Afecta el costo)</td>
+                        </tr>
+                        <tr>
+                            <td class="bold text-success">IGV de Importación (18% sobre CIF + Ad Valorem)</td>
+                            <td class="text-right text-success bold">USD 1,186.86</td>
+                            <td class="text-right text-success bold">S/ 4,154.01</td>
+                            <td class="text-gray">Crédito Fiscal 100% Recuperable</td>
+                        </tr>
+                        <tr>
+                            <td class="bold text-success">Percepción del IGV (Tasa 10% - Primer Despacho)</td>
+                            <td class="text-right text-success bold">USD 778.05</td>
+                            <td class="text-right text-success bold">S/ 2,723.18</td>
+                            <td class="text-gray">Crédito Tributario Recuperable en Efectivo</td>
+                        </tr>
+                        <tr class="bg-total-dark" style="border-top: 2px solid var(--copper);">
+                            <td class="bold" style="color: var(--copper-light);">INVERSIÓN TOTAL ESTIMADA CON IMPUESTOS</td>
+                            <td class="text-right bold" style="color: var(--copper-light);">USD 10,982.02</td>
+                            <td class="text-right bold text-copper-light">S/ 38,437.07</td>
+                            <td class="bold">Presupuesto consolidado sujeto a variación logística</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5 -->
+        <section id="precios" class="section-block">
+            <h2>05 — Simulación de Precios de Venta al Público (PVP)</h2>
+            <p>
+                Para efectos de simulación referencial en el mercado peruano, el precio de venta proyectado se calcula adicionando un margen estimado sobre el costo unitario integrado de aduanas, aplicando posteriormente la tasa del 18% de IGV. Esta proyección no garantiza resultados comerciales.
+            </p>
+
+            <div class="table-container table-light-premium precios-table">
+                <div class="table-title" style="background: var(--navy-dark);">Escenarios de Proyección de Precios de Venta (Valores en Soles)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PRENDA SELECCIONADA</th>
+                            <th>ESTRATEGIA DE VENTA</th>
+                            <th class="text-right" style="width: 120px;">COSTO UNIT. REFERENCIAL</th>
+                            <th class="text-right" style="width: 140px;">PRECIO BASE (SIN IGV)</th>
+                            <th class="text-right" style="width: 140px;">IGV COMERCIAL (18%)</th>
+                            <th class="text-right text-copper bold" style="width: 150px;">PRECIO PROYECTADO (PVP)</th>
+                            <th class="text-right text-success bold" style="width: 140px;">UTILIDAD ESTIMADA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Abrigo -->
+                        <tr>
+                            <td class="bold" style="vertical-align: middle; border-right: 1px solid var(--border-color);">
+                                <div class="table-flex-prod">
+                                    <img src="PRINCESS CUT COAT WITH LINING.jpeg" alt="Coat Th" class="table-thumb light-bg-thumb">
+                                    <div>
+                                        <span>Princess Cut Coat</span><br>
+                                        <span class="text-gray" style="font-size: .75rem; font-weight: 400;">Lote de 201 un.</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Escenario 1 (35%)<br><span class="bold text-copper">⭐ Margen Referencial (45%)</span></td>
+                            <td class="text-right" style="vertical-align: middle; border-right: 1px solid var(--border-color); font-weight: 600;">S/ 48.46</td>
+                            <td>S/ 74.55<br><span class="bold">S/ 88.11</span></td>
+                            <td>S/ 13.42<br><span class="bold">S/ 15.86</span></td>
+                            <td>S/ 87.97<br><span class="bold text-copper">S/ 103.97</span></td>
+                            <td>S/ 26.09<br><span class="bold text-success">S/ 39.65</span></td>
+                        </tr>
+                        
+                        <!-- Blazer -->
+                        <tr style="border-top: 1px solid var(--border-color);">
+                            <td class="bold" style="vertical-align: middle; border-right: 1px solid var(--border-color);">
+                                <div class="table-flex-prod">
+                                    <img src="Princess Cut Tweed Blazer.jpeg" alt="Blazer Th" class="table-thumb light-bg-thumb">
+                                    <div>
+                                        <span>Tweed Blazer</span><br>
+                                        <span class="text-gray" style="font-size: .75rem; font-weight: 400;">Lote de 200 un.</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Escenario 1 (30%)<br><span class="bold text-copper">⭐ Margen Referencial (40%)</span></td>
+                            <td class="text-right" style="vertical-align: middle; border-right: 1px solid var(--border-color); font-weight: 600;">S/ 58.56</td>
+                            <td>S/ 83.66<br><span class="bold">S/ 97.60</span></td>
+                            <td>S/ 15.06<br><span class="bold">S/ 17.57</span></td>
+                            <td>S/ 98.72<br><span class="bold text-copper">S/ 115.17</span></td>
+                            <td>S/ 25.10<br><span class="bold text-success">S/ 39.04</span></td>
+                        </tr>
+
+                        <!-- Cardigan -->
+                        <tr style="border-top: 1px solid var(--border-color);">
+                            <td class="bold" style="vertical-align: middle; border-right: 1px solid var(--border-color);">
+                                <div class="table-flex-prod">
+                                    <img src="short black knit cardigan with faux pearl design.jpeg" alt="Cardigan Th" class="table-thumb light-bg-thumb">
+                                    <div>
+                                        <span>Knit Cardigan</span><br>
+                                        <span class="text-gray" style="font-size: .75rem; font-weight: 400;">Lote de 200 un.</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Escenario 1 (30%)<br><span class="bold text-copper">⭐ Margen Referencial (40%)</span></td>
+                            <td class="text-right" style="vertical-align: middle; border-right: 1px solid var(--border-color); font-weight: 600;">S/ 39.11</td>
+                            <td>S/ 55.87<br><span class="bold">S/ 65.18</span></td>
+                            <td>S/ 10.06<br><span class="bold">S/ 11.73</span></td>
+                            <td>S/ 65.93<br><span class="bold text-copper">S/ 76.91</span></td>
+                            <td>S/ 16.76<br><span class="bold text-success">S/ 26.07</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6 -->
+        <section id="fiscal" class="section-block">
+            <h2>06 — Aspectos Tributarios Referenciales</h2>
+            <p>
+                Los tributos liquidados en la base aduanera que suman <strong>USD 1,964.91</strong> (IGV + Percepción) podrían no constituir un gasto definitivo para la empresa. Conforme a la normativa peruana, estos conceptos pueden estar sujetos a mecanismos de recuperación, dependiendo de la situación fiscal de cada contribuyente:
+            </p>
+            <ol>
+                <li><strong>IGV de Importación (USD 1,186.86):</strong> La aplicación de este monto como <strong>Crédito Fiscal</strong> dependerá de las operaciones gravadas que realice el contribuyente y deberá ser validada por su área contable.</li>
+                <li><strong>Percepción del IGV (USD 778.05):</strong> Corresponde al pago adelantado en aduanas. De acuerdo con la normativa de SUNAT, puede ser objeto de compensación o devolución bajo las siguientes modalidades generales:
+                    <ul style="margin-top: 6px; margin-left: 20px;">
+                        <li><strong>Compensación:</strong> Posibilidad de utilizar el saldo para amortizar otros tributos administrados por SUNAT.</li>
+                        <li><strong>Devolución:</strong> Procedimiento sujeto a los plazos, requisitos formales y fiscalizaciones eventuales que disponga la SUNAT. Todo trámite deberá ser evaluado y ejecutado por el asesor contable del cliente.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <!-- SECCIÓN 7 -->
+        <section id="cierre" class="section-block">
+            <h2>07 — Revisión de Etapa y Siguientes Pasos</h2>
+            <p>
+                Con la presentación de los costos estimados y la proyección referencial de la importación, concluimos la elaboración de este informe preliminar. Los escenarios planteados constituyen una base referencial para la evaluación y decisión del cliente.
+            </p>
+
+            <div class="alert-box">
+                <h4>Condición de Pago Solicitada por el Fábrica:</h4>
+                <p>
+                    ⚠️ <strong>Nota Operativa:</strong> De acuerdo con la información brindada por la fábrica, y al manifestar contar con stock de las 601 prendas, el fábrica solicita el pago del <strong>100% del valor FOB de la Orden de Compra</strong> para proceder con la liberación de la mercadería.
+                </p>
+                <p style="margin-top: 10px; margin-bottom: 0;">
+                    Es potestad y responsabilidad del cliente decidir si desea proceder bajo esta modalidad. Realizar un solo pago consolida las transferencias y mitiga múltiples comisiones bancarias, pero la decisión de asumir este adelanto recae exclusivamente en la empresa compradora.
+                </p>
+            </div>
+
+            <div class="alert-box success">
+                <h4>🚀 Propuesta lista para revisión del cliente</h4>
+                <p style="margin-bottom: 12px; font-weight: 500; color: var(--success-text);">Para dar inicio a la siguiente etapa de gestión con el fábrica, se requiere la instrucción del cliente bajo el siguiente flujo propuesto:</p>
+                <p>1. Procesar la transferencia internacional correspondiente al valor FOB comercial acordado con la fábrica.</p>
+                <p>2. Enviar el comprobante bancario al ejecutivo asignado de SMART IMPORT para notificar a la fábrica y solicitar la separación del stock.</p>
+                <p>3. Activación de la siguiente fase: Envío de inspectores y ejecución del control técnico de calidad visual y documental, previo al cierre de la carga.</p>
+            </div>
+        </section>
+
+        <!-- LIMITACIONES Y ALCANCE -->
+        <section id="limitaciones" class="section-block">
+            <h2>08 — Limitaciones y Alcance del Informe</h2>
+            <ul style="margin-bottom: 0;">
+                <li><strong>Carácter Referencial:</strong> Todos los costos, tarifas logísticas y proyecciones económicas aquí presentados son netamente estimados y referenciales.</li>
+                <li><strong>Variaciones Logísticas y Aduaneras:</strong> Los costos finales pueden variar según el peso, volumen, empaque final, tarifas navieras al momento del embarque y ajustes aduaneros en destino.</li>
+                <li><strong>Calidad del Producto:</strong> La calidad definitiva de la mercadería solo podrá ser validada mediante el servicio de inspección preembarque en origen o la revisión física de la carga. Para mayor seguridad, se recomienda solicitar muestras físicas antes de autorizar el embarque masivo. Smart Import no asume responsabilidad por la calidad final ni por variaciones respecto a las referencias suministradas por la fábrica.</li>
+                <li><strong>Tipo de Cambio:</strong> Las proyecciones en moneda local (PEN) están sujetas a las fluctuaciones del tipo de cambio al momento del pago de los tributos y servicios.</li>
+                <li><strong>Resultados Comerciales:</strong> Este documento no constituye garantía alguna de aceptación comercial, rotación de inventario, ni rentabilidad asegurada.</li>
+                <li><strong>Responsabilidad de Compra:</strong> La decisión de compra, la selección del fábrica y la asunción de las condiciones de pago corresponden única y exclusivamente al cliente.</li>
+                <li><strong>Actualización de Información:</strong> Smart Import se reserva el derecho de actualizar las estimaciones y proyecciones del presente informe conforme se reciba nueva información operativa o de mercado.</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- SCROLL SPY CONMUTADOR DE SECCIÓN -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section-block');
+            const navItems = document.querySelectorAll('.nav-item');
+
+            window.addEventListener('scroll', () => {
+                let currentSec = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= (sectionTop - 240)) {
+                        currentSec = section.getAttribute('id');
+                    }
+                });
+
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('data-sec') === currentSec) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
